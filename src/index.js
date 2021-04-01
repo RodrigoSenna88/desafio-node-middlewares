@@ -28,7 +28,33 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+  const { id } = request.params;
+
+  
+  const validateId = validate(id);
+
+  if(!validateId) {
+    return response.status(400).json({ error: 'Id is not valid.'})
+  }
+
+  if(!user) {
+    return response.status(404).json({ error: 'User not found.'})
+  }
+
+  const todoIndex = user.todos.findIndex(todo => todo.id === id);
+  
+
+  if(!todoIndex) {
+    return response.status(400).json({ error: 'Todo not found.'})
+  }
+
+  
+ 
+
+ 
+  return next();
+
 }
 
 function findUserById(request, response, next) {
