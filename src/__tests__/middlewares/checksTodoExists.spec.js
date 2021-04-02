@@ -70,6 +70,8 @@ describe('checksTodoExists', () => {
     mockRequest.__defineSetter__('todo', mockTodoSetter);
     mockRequest.__defineSetter__('user', mockUserSetter);
 
+    console.log(mockTodoSetter);
+    console.log(mockUserSetter);
     const mockResponse = response();
 
     checksTodoExists(mockRequest, mockResponse, mockNext);

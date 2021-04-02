@@ -24,11 +24,34 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;
+
+    if(!user) {
+    return response.status(404).json({ error: 'User not found.'})
+  }
+
+  const userPlan = user.pro
+  const allTodos = user.todos.length;
+
+  console.log(allTodos)
+
+    if(allTodos >= 10 && userPlan === false) {
+    return response.status(403).json({ error: 'The todos creation limit has been reached.'})
+  }
+
+  return next();
+
 }
 
 function checksTodoExists(request, response, next) {
-  const { user } = request;
+  const { username } = request.headers;
+
+  const user = users.find(user => user.username === username);
+
+  if(!user) {
+    return response.status(404).json({ error: "User not found!"})
+  }
+
   const { id } = request.params;
 
   
@@ -37,22 +60,36 @@ function checksTodoExists(request, response, next) {
   if(!validateId) {
     return response.status(400).json({ error: 'Id is not valid.'})
   }
+  console.log("chegou aqui1");
 
-  if(!user) {
-    return response.status(404).json({ error: 'User not found.'})
-  }
-
+ 
   const todoIndex = user.todos.findIndex(todo => todo.id === id);
   
+  console.log(todoIndex);
 
-  if(!todoIndex) {
-    return response.status(400).json({ error: 'Todo not found.'})
+
+  if(todoIndex < 0) {
+    return response.status(404).json({ error: 'Todo not found.'})
   }
 
-  
- 
+  console.log("chegou aqui2");
 
- 
+  const todo = user.todos[todoIndex];
+
+  
+  if(!todo) {
+    return response.status(404).json({ error: 'Todo does not exists.'})
+  }
+
+
+  console.log(todo);
+
+
+
+  response.todo = todo;
+  response.user = user;
+
+   
   return next();
 
 }
@@ -60,13 +97,13 @@ function checksTodoExists(request, response, next) {
 function findUserById(request, response, next) {
   const { id } = request.params;
 
-  const user = users.find(user => user.id === id);
+  const userId = users.find(user => user.id === id);
 
-  if(!user) {
+    if(!userId) {
     return response.status(404).json({ error: "User not found!"})
   }
 
-  request.user = user;
+  request.user = userId;
 
   return next();
 }
@@ -117,7 +154,7 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
   return response.json(user.todos);
 });
 
-app.post('/todos', checksExistsUserAccount, checksCreateTodosUserAvailability, (request, response) => {
+app.post('/todos', checksExistsUserAccount, checksCreateTodosUserAvailability,  (request, response) => {
   const { title, deadline } = request.body;
   const { user } = request;
 
