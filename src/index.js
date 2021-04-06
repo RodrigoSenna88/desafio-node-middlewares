@@ -81,15 +81,13 @@ function checksTodoExists(request, response, next) {
     return response.status(404).json({ error: 'Todo does not exists.'})
   }
 
+  request.user = user;
+  request.todo = todo
 
-  console.log(todo);
+  console.log("chegou aqui 3");
+ 
 
-
-
-  response.todo = todo;
-  response.user = user;
-
-   
+ 
   return next();
 
 }
